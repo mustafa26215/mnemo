@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mnemo — Vocabulary Flashcards</title>
+<meta name="description" content="Mnemo helps you learn, remember, and review English vocabulary with flashcards.">
+<meta name="theme-color" content="#F6F4FD" id="themeColor">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="shortcut icon" href="icons/favicon.ico">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Mnemo">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<script>try{if(JSON.parse(localStorage.getItem('lumen.vocab.v1')).prefs.theme==='dark')document.documentElement.setAttribute('data-theme','dark')}catch(e){}</script>
+<style>
+:root{
+  --ink:#1E1836;--muted:#6B6585;--bg:#F6F4FD;--surface:#fff;--line:#E7E2F6;
+  --p:#6D3FE0;--p-d:#5429BE;--p-l:#EFE9FD;--p-xl:#F8F5FF;
+  --known:#25A57B;--known-l:#E1F6EE;--learn:#E8932A;--learn-l:#FFF1DE;--danger:#D6455D;
+  --beg:#25A57B;--int:#E8932A;--adv:#D9468F;
+  --btn:#6D3FE0;--btn-h:#5429BE;--hdr:rgba(246,244,253,.85);--navbg:rgba(255,255,255,.95);--track:#EEEAF8;--glow:#E6DCFF;--back1:#F8F5FF;--back2:#EBE2FF;--back-line:#D8CBF7;--sech:#E3D9FC;--ex:#3C3360;--toast:#1E1836;--toast-t:#fff;
+  --r:18px;--shadow:0 1px 2px rgba(40,20,90,.06),0 8px 24px rgba(40,20,90,.07);
+  --serif:Georgia,"Iowan Old Style","Palatino Linotype",serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+html[data-theme=dark]{--ink:#ECE8FA;--muted:#A49DC0;--bg:#14101F;--surface:#1D1830;--line:#2E2748;--p:#9B78F5;--p-d:#B49BFA;--p-l:#2A2147;--p-xl:#221B3B;--known:#37C597;--known-l:#143B31;--learn:#F0A24A;--learn-l:#40290F;--danger:#F0647B;--btn:#7B52E8;--btn-h:#6A41D6;--shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);--hdr:rgba(20,16,31,.85);--navbg:rgba(29,24,48,.95);--track:#2B2444;--glow:#2B1D58;--back1:#241C42;--back2:#2F2358;--back-line:#443775;--sech:#352A5C;--ex:#D9D0F5;--toast:#ECE8FA;--toast-t:#1E1836;color-scheme:dark}
+html[data-theme=dark] .btn.ok{background:#1F8C69}html[data-theme=dark] .btn.ok:hover{background:#1A7A5B}
+html[data-theme=dark] .btn.warn{color:#F5B263}html[data-theme=dark] .btn.warn:hover{background:#523414}
+html[data-theme=dark] .btn.dng{background:#D6455D}
+html[data-theme=dark] .tag.Beginner{color:#5FDDB5}html[data-theme=dark] .tag.Intermediate{color:#F5B263}html[data-theme=dark] .tag.Advanced{background:#3E1A2D;color:#F08BBB}
+html.theme-anim *{transition:background-color .35s ease,color .35s ease,border-color .35s ease,box-shadow .35s ease!important}
+*{box-sizing:border-box;margin:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.5;min-height:100vh;overflow-x:hidden;
+  background-image:radial-gradient(900px 400px at 85% -10%,var(--glow) 0,transparent 70%)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid #A98BF5;outline-offset:2px}
+.hide{display:none!important}
+header.top{position:sticky;top:0;z-index:20;background:var(--hdr);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.bar{max-width:1160px;margin:auto;padding:12px clamp(16px,3vw,32px);display:flex;align-items:center;gap:24px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-size:1.4rem;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--ink)}
+.logo{width:34px;height:34px;flex:none}
+nav{display:flex;gap:4px;margin-left:auto}
+nav a{padding:8px 14px;border-radius:999px;text-decoration:none;color:var(--muted);font-weight:600;font-size:.92rem;transition:.2s}
+nav a:hover{color:var(--p);background:var(--p-l)}
+nav a.on{background:var(--btn);color:#fff}
+main{max-width:1160px;margin:auto;padding:28px clamp(16px,3vw,32px) 60px}
+h1{font-family:var(--serif);font-size:clamp(1.9rem,4.5vw,2.7rem);letter-spacing:-.025em;line-height:1.15}
+h2{font-family:var(--serif);font-size:1.35rem;letter-spacing:-.01em}
+.sub{color:var(--muted);margin-top:6px;max-width:56ch}
+.card{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);border:1px solid var(--line);padding:24px}
+.btn{border:0;border-radius:12px;padding:12px 20px;font-weight:650;cursor:pointer;transition:transform .15s,background .2s,box-shadow .2s;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;text-decoration:none}
+.btn:active{transform:scale(.97)}
+.btn.pri{background:var(--btn);color:#fff;box-shadow:0 6px 16px rgba(109,63,224,.3)}
+.btn.pri:hover{background:var(--btn-h)}
+.btn.sec{background:var(--p-l);color:var(--p-d)}.btn.sec:hover{background:var(--sech)}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}.btn.ghost:hover{background:var(--p-xl);border-color:#CFC3F3}
+.btn.ok{background:var(--known);color:#fff}.btn.ok:hover{background:#1D8E6A}
+.btn.warn{background:var(--learn-l);color:#B36A10}.btn.warn:hover{background:#FFE6C4}
+.btn.dng{background:var(--danger);color:#fff}
+.btn.sm{padding:7px 12px;min-height:36px;font-size:.88rem;border-radius:10px}
+.grid{display:grid;gap:18px}
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;align-items:stretch}
+.hero-l{background:linear-gradient(140deg,#6D3FE0 0,#4B22AE 100%);color:#fff;border:0;display:flex;flex-direction:column;justify-content:space-between;gap:28px;position:relative;overflow:hidden}
+.hero-l::after{content:"Aa";position:absolute;right:-10px;bottom:-40px;font-family:var(--serif);font-size:12rem;font-weight:700;opacity:.08;line-height:1}
+.hero-l .sub{color:#DCD0FF}
+.hero-l .btn{background:#fff;color:#5429BE;align-self:flex-start;box-shadow:0 8px 20px rgba(0,0,0,.2)}
+.hero-l .btn:hover{background:#F3EEFF}
+.ring{display:flex;align-items:center;gap:22px}
+.ring svg{width:124px;height:124px;flex:none;transform:rotate(-90deg)}
+.ring .bg{stroke:var(--p-l)}.ring .fg{stroke:var(--p);transition:stroke-dashoffset .6s ease}
+.pct{font-family:var(--serif);font-size:2.4rem;font-weight:700;line-height:1}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:18px;margin-top:18px}
+.stat b{display:block;font-family:var(--serif);font-size:2rem;line-height:1.1}
+.stat span{color:var(--muted);font-size:.9rem}
+.stat i{display:block;width:30px;height:4px;border-radius:4px;margin-bottom:12px}
+.two{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;margin-top:18px}
+.lv{display:flex;flex-direction:column;gap:14px;margin-top:14px}
+.lvrow .t{display:flex;justify-content:space-between;font-size:.92rem;font-weight:600;margin-bottom:6px}
+.lvrow .t em{font-style:normal;color:var(--muted);font-weight:500}
+.track{height:9px;border-radius:9px;background:var(--track);overflow:hidden}
+.track>i{display:block;height:100%;border-radius:9px;transition:width .5s ease}
+.act{display:flex;align-items:flex-end;gap:10px;height:120px;margin-top:14px}
+.act div{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+.act i{width:100%;max-width:30px;border-radius:8px 8px 4px 4px;background:var(--p);min-height:4px}
+.act i.z{background:var(--line)}
+.act small{font-size:.75rem;color:var(--muted)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0}
+.chip{border:1px solid var(--line);background:var(--surface);padding:8px 16px;border-radius:999px;cursor:pointer;font-weight:600;font-size:.9rem;transition:.2s}
+.chip:hover{border-color:#CFC3F3}
+.chip.on{background:var(--btn);border-color:var(--btn);color:#fff}
+.tag{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:999px;font-size:.8rem;font-weight:650;background:var(--p-l);color:var(--p-d)}
+.tag::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.tag.Beginner{background:var(--known-l);color:#177A5A}
+.tag.Intermediate{background:var(--learn-l);color:#B36A10}
+.tag.Advanced{background:#FCE6F0;color:#B3306F}
+.study{max-width:640px;margin:0 auto}
+.meta{display:flex;justify-content:space-between;font-weight:650;font-size:.92rem;margin-bottom:8px}
+.meta span{color:var(--muted);font-weight:500}
+.scene{perspective:1400px;margin:22px 0;animation:in .35s ease}
+@keyframes in{from{opacity:0;transform:translateY(8px)}}
+.flip{position:relative;height:clamp(300px,52vw,380px);transform-style:preserve-3d;transition:transform .65s cubic-bezier(.3,.7,.2,1);cursor:pointer}
+.flip.f{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:26px;padding:26px;display:flex;flex-direction:column;box-shadow:0 2px 4px rgba(40,20,90,.06),0 24px 48px rgba(77,34,174,.16);border:1px solid var(--line)}
+.front{background:var(--surface);align-items:center;justify-content:space-between;text-align:center}
+.front .top,.back .top{width:100%;display:flex;justify-content:space-between;align-items:center}
+.pos{font-style:italic;font-family:var(--serif);color:var(--muted)}
+.word{font-family:var(--serif);font-size:clamp(2.3rem,9vw,3.6rem);font-weight:700;letter-spacing:-.02em;word-break:break-word}
+.hint{font-size:.85rem;color:var(--muted)}
+.back{transform:rotateY(180deg);background:linear-gradient(160deg,var(--back1),var(--back2));justify-content:center;gap:18px;overflow:auto}
+.back .top{position:absolute;top:26px;left:26px;right:26px;width:auto}
+.back h3{font-size:.8rem;color:var(--p-d);margin-bottom:4px}
+.back p{font-size:1.1rem;line-height:1.55}
+.back .def{padding-bottom:18px;border-bottom:1px solid var(--back-line)}
+.back .ex p{font-family:var(--serif);font-style:italic;color:var(--ex);border-left:3px solid var(--p);padding-left:14px}
+.back-in{margin-top:34px}
+.ctl{display:flex;justify-content:center;gap:10px}
+.ans{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.ans .btn{padding:16px}
+.sbadge{font-size:.8rem;font-weight:650}
+.empty{text-align:center;padding:50px 20px}
+.empty p{color:var(--muted);margin:8px 0 18px}
+.lvgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:22px}
+.lvc{display:flex;flex-direction:column;gap:14px;border-top:5px solid var(--c)}
+.lvc b{font-family:var(--serif);font-size:2.4rem;line-height:1}
+.lvc .btn{margin-top:auto}
+.mg{display:grid;grid-template-columns:380px 1fr;gap:18px;margin-top:22px;align-items:start}
+label{display:block;font-weight:600;font-size:.9rem;margin:14px 0 6px}
+input,select,textarea{width:100%;padding:11px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--surface);transition:.2s}
+input:focus,select:focus,textarea:focus{border-color:var(--p);outline:0;box-shadow:0 0 0 4px var(--p-l)}
+textarea{min-height:76px;resize:vertical}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.err{color:var(--danger);font-size:.82rem;margin-top:4px;min-height:0}
+.bad{border-color:var(--danger)!important}
+.fa{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+.tools{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.tools input{flex:1;min-width:160px}.tools select{width:auto}
+.list{display:flex;flex-direction:column;gap:10px;max-height:640px;overflow:auto;padding:2px}
+.item{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.item:hover{border-color:#CFC3F3}
+.item h4{font-family:var(--serif);font-size:1.15rem;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.item p{color:var(--muted);font-size:.9rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.item .a{display:flex;gap:6px;flex:none}
+.dot{width:9px;height:9px;border-radius:50%;background:#D9D3EC;flex:none}.dot.known{background:var(--known)}.dot.learning{background:var(--learn)}
+.set{display:flex;justify-content:space-between;gap:18px;align-items:center;padding:20px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.set:last-child{border:0}.set p{color:var(--muted);font-size:.92rem;max-width:46ch}
+dialog{margin:auto;max-height:calc(100dvh - 32px);overflow:auto;border:0;background:var(--surface);color:var(--ink);border-radius:22px;padding:28px;max-width:420px;width:calc(100% - 32px);box-shadow:0 30px 80px rgba(30,24,54,.35)}
+dialog::backdrop{background:rgba(30,24,54,.5);backdrop-filter:blur(3px)}
+dialog p{color:var(--muted);margin:8px 0 22px}
+dialog .fa{justify-content:flex-end;margin:0}
+#toast{position:fixed;left:50%;bottom:92px;transform:translate(-50%,20px);background:var(--toast);color:var(--toast-t);padding:12px 20px;border-radius:14px;opacity:0;pointer-events:none;transition:.3s;z-index:60;max-width:90vw;font-weight:550;font-size:.92rem}
+#toast.s{opacity:1;transform:translate(-50%,0)}
+header.top{padding-top:env(safe-area-inset-top,0px)}
+.iconbtn{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;display:grid;place-items:center;transition:.2s;flex:none}
+.iconbtn:hover{background:var(--p-l);color:var(--p)}
+.iconbtn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tr{display:flex;align-items:center;gap:8px}
+.heart{width:38px;height:38px;border-radius:50%;border:0;background:transparent;color:var(--muted);cursor:pointer;display:grid;place-items:center;transition:.2s;flex:none}
+.heart:hover{background:var(--p-l)}.heart.on{color:var(--adv)}
+.heart svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round}.heart.on svg{fill:currentColor}
+.search{margin:-6px 0 18px}
+.goal{margin-top:18px;display:flex;gap:24px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.hint.goalnote{margin-top:8px}
+@media(min-width:1500px){html{font-size:18px}main,.bar{max-width:1280px}}
+@media(min-width:1100px){.study{max-width:700px}}
+@media(max-width:1000px){.mg{grid-template-columns:1fr}nav a{padding:8px 11px}}
+@media(max-height:560px) and (orientation:landscape){.flip{height:250px}.word{font-size:2.2rem}.back p{font-size:1rem}.scene{margin:14px 0}}
+@media(max-width:860px){
+  input,select,textarea{font-size:16px}
+  .chip{min-height:40px}
+  .hero-l{gap:20px}
+  .hero,.two,.mg{grid-template-columns:1fr}
+  .lvgrid{grid-template-columns:1fr}
+  .bar{padding:12px 16px}
+  .iconbtn{margin-left:auto}
+  nav{position:fixed;bottom:0;left:0;right:0;margin:0;background:var(--navbg);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:8px 6px calc(8px + env(safe-area-inset-bottom));justify-content:space-around;z-index:30}
+  nav a{flex:1;text-align:center;padding:10px 2px;font-size:.78rem;border-radius:12px}
+  main{padding:20px 16px 110px}
+  #toast{bottom:90px}
+}
+@media(max-width:380px){
+  nav a{font-size:.7rem;padding:10px 0}
+  h1{font-size:1.7rem}.brand{font-size:1.25rem}
+  .btn{padding:11px 14px}.ctl{gap:6px}.ctl .btn{padding:11px 12px}
+  .face{padding:20px}
+}
+@media(max-width:520px){
+  .stats{grid-template-columns:1fr 1fr;gap:10px}.stat b{font-size:1.5rem}
+  .card{padding:18px}.ring{gap:14px}.ring svg{width:96px;height:96px}
+  .row2{grid-template-columns:1fr}
+  .item{flex-direction:column;align-items:stretch}.item .a{justify-content:flex-end}
+}
+@media(prefers-reduced-motion:reduce){*{transition-duration:.01ms!important;animation:none!important}}
+</style>
+</head>
+<body>
+<header class="top"><div class="bar">
+  <a class="brand" href="#dashboard" aria-label="Mnemo home"><svg class="logo" viewBox="0 0 128 128" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#4B22AE"/></linearGradient></defs><rect width="128" height="128" rx="30" fill="url(#lg)"/><g transform="translate(0 2)"><path d="M34 88V62a15 15 0 0 1 30 0v26M64 62a15 15 0 0 1 30 0v26" fill="none" stroke="#fff" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/><circle cx="94" cy="38" r="8" fill="#F5B544"/></g></svg>Mnemo</a>
+  <nav id="nav">
+    <a href="#dashboard" data-v="dashboard">Dashboard</a>
+    <a href="#study" data-v="study">Study</a>
+    <a href="#levels" data-v="levels">Levels</a>
+    <a href="#words" data-v="words">Words</a>
+    <a href="#settings" data-v="settings">Settings</a>
+  </nav>
+  <button class="iconbtn" id="theme" type="button" aria-label="Switch to dark mode" title="Switch theme"></button>
+</div></header>
+<main id="app"></main>
+<dialog id="dlg"><h2 id="dT"></h2><p id="dM"></p><div class="fa"><button class="btn ghost" id="dNo">Cancel</button><button class="btn dng" id="dYes">Confirm</button></div></dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+'use strict';
+const KEY = 'lumen.vocab.v1'; // legacy key kept so saved words and progress survive the rebrand
+const LEVELS = ['Beginner', 'Intermediate', 'Advanced'];
+const LCOL = { Beginner: 'var(--beg)', Intermediate: 'var(--int)', Advanced: 'var(--adv)' };
+const POS = ['noun', 'verb', 'adjective', 'adverb', 'preposition', 'conjunction', 'pronoun', 'interjection'];
+
+const SEED = [
+  ['curious','adjective','Beginner','Eager to learn or know something.','The curious child asked how the clock worked.'],
+  ['borrow','verb','Beginner','To take something and give it back after using it.','Can I borrow your pen for a minute?'],
+  ['journey','noun','Beginner','A trip from one place to another, especially a long one.','Their journey across the country took five days.'],
+  ['gentle','adjective','Beginner','Calm, soft, and careful in the way you act or speak.','She spoke in a gentle voice to calm the puppy.'],
+  ['improve','verb','Beginner','To become better, or to make something better.','Reading every day will improve your vocabulary.'],
+  ['neighbor','noun','Beginner','A person who lives near you.','Our neighbor waters our plants when we travel.'],
+  ['reliable','adjective','Intermediate','Able to be trusted to do what is expected.','He is a reliable colleague who always meets deadlines.'],
+  ['negotiate','verb','Intermediate','To discuss something in order to reach an agreement.','They negotiated a fair price for the old house.'],
+  ['perspective','noun','Intermediate','A particular way of thinking about something.','Travelling gave her a new perspective on her own culture.'],
+  ['consequence','noun','Intermediate','A result or effect of an action or decision.','Missing the meeting had serious consequences for the project.'],
+  ['reluctant','adjective','Intermediate','Unwilling and hesitant to do something.','She was reluctant to speak in front of the whole class.'],
+  ['accomplish','verb','Intermediate','To succeed in doing or completing something.','He accomplished his goal of running a marathon.'],
+  ['ephemeral','adjective','Advanced','Lasting for only a very short time.','The beauty of cherry blossoms is ephemeral, fading within days.'],
+  ['meticulous','adjective','Advanced','Showing great attention to detail; very careful and precise.','The editor was meticulous, catching every tiny error.'],
+  ['ubiquitous','adjective','Advanced','Seeming to be present everywhere at the same time.','Smartphones have become ubiquitous in modern life.'],
+  ['mitigate','verb','Advanced','To make something less harmful, severe, or serious.','Planting trees can help mitigate the effects of urban heat.'],
+  ['pragmatic','adjective','Advanced','Dealing with problems in a practical and realistic way.','She took a pragmatic approach and focused on what was achievable.'],
+  ['serendipity','noun','Advanced','The pleasant discovery of something good by chance.','Meeting my mentor at the café was pure serendipity.']
+];
+const seedWords = () => SEED.map(([word, pos, level, def, ex], i) => ({ id: 's' + i, word, pos, level, def, ex, status: 'new' }));
+
+let S = load();
+function load() {
+  try {
+    const d = JSON.parse(localStorage.getItem(KEY));
+    if (d && Array.isArray(d.words)) return { words: d.words, prefs: Object.assign({ level: 'all', theme: 'light', shuffle: false }, d.prefs), activity: d.activity || {}, goal: [5, 10, 20, 30].includes(d.goal) ? d.goal : 10 };
+  } catch (e) {}
+  return { words: seedWords(), prefs: { level: 'all', theme: 'light', shuffle: false }, activity: {}, goal: 10 };
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(S)); }
+  catch (e) { toast('Could not save. Your browser storage may be full or blocked.'); }
+}
+
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+const uid = () => 'w' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const today = (d = new Date()) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+
+let tt;
+function toast(m) { const t = $('#toast'); t.textContent = m; t.classList.add('s'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('s'), 2600); }
+function confirmDlg(title, msg, ok) {
+  return new Promise(res => {
+    const d = $('#dlg'); $('#dT').textContent = title; $('#dM').textContent = msg; $('#dYes').textContent = ok;
+    const done = v => { d.close(); $('#dYes').onclick = $('#dNo').onclick = null; res(v); };
+    $('#dYes').onclick = () => done(true); $('#dNo').onclick = () => done(false);
+    d.oncancel = e => { e.preventDefault(); done(false); };
+    d.showModal();
+  });
+}
+
+function stats(list = S.words) {
+  const total = list.length, known = list.filter(w => w.status === 'known').length;
+  return { total, known, learning: total - known, pct: total ? Math.round(known / total * 100) : 0 };
+}
+const byLevel = l => S.words.filter(w => w.level === l);
+
+/* ---------- Study state ---------- */
+let deck = [], idx = 0, flipped = false, sq = '';
+const todayCount = () => S.activity[today()] || 0;
+const heart = w => `<button class="heart ${w.fav ? 'on' : ''}" data-fav="${w.id}" aria-pressed="${!!w.fav}" aria-label="${w.fav ? 'Remove from favorites' : 'Add to favorites'}"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></button>`;
+function buildDeck(keepOrder) {
+  const lv = S.prefs.level, q = sq.trim().toLowerCase();
+  const ids = S.words.filter(w => (lv === 'all' || (lv === 'fav' ? w.fav : w.level === lv)) && (!q || w.word.toLowerCase().includes(q) || w.def.toLowerCase().includes(q))).map(w => w.id);
+  if (keepOrder) { const kept = deck.filter(id => ids.includes(id)); deck = kept.concat(ids.filter(id => !kept.includes(id))); }
+  else { deck = ids; if (S.prefs.shuffle) shuffleDeck(); }
+  idx = Math.min(idx, Math.max(deck.length - 1, 0)); flipped = false;
+}
+// Fisher-Yates. Each card appears once per round; a new round never starts with the card just seen.
+function shuffleDeck(avoid) {
+  for (let i = deck.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [deck[i], deck[j]] = [deck[j], deck[i]]; }
+  if (avoid && deck.length > 1 && deck[0] === avoid) { const j = 1 + Math.floor(Math.random() * (deck.length - 1)); [deck[0], deck[j]] = [deck[j], deck[0]]; }
+  idx = 0; flipped = false;
+}
+function advance() {
+  flipped = false;
+  if (idx < deck.length - 1) idx++;
+  else if (S.prefs.shuffle && deck.length > 1) { shuffleDeck(deck[idx]); toast('Round complete. Starting a new shuffled round.'); }
+  else toast('You reached the end of this deck.');
+}
+function mark(status) {
+  const w = S.words.find(x => x.id === deck[idx]); if (!w) return;
+  w.status = status;
+  const k = today(); S.activity[k] = todayCount() + 1;
+  const reached = S.activity[k] === S.goal;
+  save(); advance(); render();
+  if (reached) toast('Daily goal reached. Great work!');
+}
+function toggleFav(id) {
+  const w = S.words.find(x => x.id === id); if (!w) return;
+  w.fav = !w.fav; save();
+  if (view() === 'words') wordList();
+  else document.querySelectorAll('[data-fav]').forEach(b => { b.classList.toggle('on', w.fav); b.setAttribute('aria-pressed', w.fav); b.setAttribute('aria-label', w.fav ? 'Remove from favorites' : 'Add to favorites'); });
+  toast(w.fav ? 'Added to favorites' : 'Removed from favorites');
+}
+function setTheme(t) {
+  S.prefs.theme = t; document.documentElement.toggleAttribute('data-theme', false);
+  if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  $('#themeColor').content = t === 'dark' ? '#14101F' : '#F6F4FD';
+  const b = $('#theme'); b.setAttribute('aria-label', t === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+  b.innerHTML = t === 'dark' ? '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>' : '<svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+}
+
+/* ---------- Views ---------- */
+const V = {
+  dashboard() {
+    const st = stats(), C = 2 * Math.PI * 52, hr = new Date().getHours(), favs = S.words.filter(w => w.fav).length, studied = Object.values(S.activity).reduce((a, b) => a + b, 0), n = todayCount(), g = S.goal;
+    const greet = hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening';
+    const days = [...Array(7)].map((_, i) => { const d = new Date(); d.setDate(d.getDate() - (6 - i)); return { n: S.activity[today(d)] || 0, l: d.toLocaleDateString('en-US', { weekday: 'short' }) }; });
+    const mx = Math.max(...days.map(d => d.n), 1), wk = days.reduce((a, d) => a + d.n, 0);
+    return `
+    <div class="hero">
+      <div class="card hero-l">
+        <div><h1>${greet}, learner.</h1>
+        <p class="sub">${st.total ? (st.known === st.total ? 'You know every word in your collection. Add more to keep growing.' : `${st.learning} ${st.learning === 1 ? 'word is' : 'words are'} waiting for you. A few minutes today makes them stick.`) : 'Your collection is empty. Add your first word to begin.'}</p></div>
+        <a class="btn" href="${st.total ? '#study' : '#words'}">${st.total ? 'Start learning' : 'Add a word'}</a>
+      </div>
+      <div class="card ring">
+        <svg viewBox="0 0 120 120"><circle class="bg" cx="60" cy="60" r="52" fill="none" stroke-width="12"/><circle class="fg" cx="60" cy="60" r="52" fill="none" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - st.pct / 100)}"/></svg>
+        <div><div class="pct">${st.pct}%</div><p class="sub" style="margin-top:4px">of your words are marked as known</p></div>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="card stat"><i style="background:var(--p)"></i><b>${st.total}</b><span>Total words</span></div>
+      <div class="card stat"><i style="background:var(--known)"></i><b>${st.known}</b><span>Known</span></div>
+      <div class="card stat"><i style="background:var(--learn)"></i><b>${st.learning}</b><span>Need review</span></div>
+      <div class="card stat"><i style="background:var(--adv)"></i><b>${favs}</b><span>Favorites</span></div>
+      <div class="card stat"><i style="background:#8B5CF6"></i><b>${studied}</b><span>Cards studied</span></div>
+    </div>
+    <div class="card goal"><div style="flex:1;min-width:220px"><h2>Daily goal</h2><p class="sub">${n >= g ? 'Goal reached. Anything more is a bonus.' : `${g - n} more ${g - n === 1 ? 'card' : 'cards'} to reach today's goal.`}</p><div class="track" style="margin:12px 0 6px"><i style="width:${Math.min(100, Math.round(n / g * 100))}%;background:${n >= g ? 'var(--known)' : 'var(--p)'}"></i></div><p class="sub" style="font-size:.88rem">${n} of ${g} cards studied today</p></div>
+      <div><p class="sub" style="margin:0 0 8px;font-size:.88rem">Cards per day</p><div class="chips" style="margin:0">${[5, 10, 20, 30].map(x => `<button class="chip ${g === x ? 'on' : ''}" data-goal="${x}">${x}</button>`).join('')}</div></div></div>
+    <div class="two">
+      <div class="card"><h2>Vocabulary levels</h2>
+        <div class="lv">${LEVELS.map(l => { const s = stats(byLevel(l)); return `<div class="lvrow"><div class="t"><span>${l}</span><em>${s.known} of ${s.total} known</em></div><div class="track"><i style="width:${s.pct}%;background:${LCOL[l]}"></i></div></div>`; }).join('')}</div>
+      </div>
+      <div class="card"><h2>This week</h2><p class="sub">${wk} ${wk === 1 ? 'card' : 'cards'} reviewed in the last 7 days.</p>
+        <div class="act">${days.map(d => `<div><i class="${d.n ? '' : 'z'}" style="height:${d.n ? Math.max(d.n / mx * 80, 8) : 4}%" title="${d.n} reviewed"></i><small>${d.l}</small></div>`).join('')}</div>
+      </div>
+    </div>`;
+  },
+
+  study() {
+    const lv = S.prefs.level, n = todayCount(), g = S.goal, names = { all: 'All levels', fav: 'Favorites' };
+    const top = `<h1>Study</h1><div class="chips">${['all', ...LEVELS, 'fav'].map(l => `<button class="chip ${lv === l ? 'on' : ''}" data-lv="${l}">${names[l] || l}</button>`).join('')}</div>
+      <input class="search" id="sq" type="search" placeholder="Search words and definitions" aria-label="Search flashcards" value="${esc(sq)}" autocomplete="off">`;
+    if (!deck.length) {
+      const msg = sq ? `No cards match "${esc(sq)}". Try another word or clear the search.` : lv === 'fav' ? 'You have no favorites yet. Tap the heart on a card to save it here.' : lv === 'all' ? 'Add some words to start studying.' : `There are no ${lv} words yet.`;
+      return `<div class="study">${top}<div class="card empty"><h2>No cards here</h2><p>${msg}</p><a class="btn pri" href="#words">Add a word</a></div></div>`;
+    }
+    const w = S.words.find(x => x.id === deck[idx]);
+    const ds = stats(deck.map(id => S.words.find(x => x.id === id)));
+    const sl = { known: ['Known', 'var(--known)'], learning: ['Need review', 'var(--learn)'], new: ['New', 'var(--muted)'] }[w.status];
+    const sh = !!S.prefs.shuffle, last = idx === deck.length - 1, canNext = !last || (sh && deck.length > 1);
+    return `<div class="study">${top}
+      <div class="meta">Card ${idx + 1} of ${deck.length}<span>${ds.known} of ${ds.total} known</span></div>
+      <div class="track"><i style="width:${ds.pct}%;background:var(--known)"></i></div>
+      <p class="hint goalnote">Daily goal: ${n} of ${g} cards today${n >= g ? '. Goal reached!' : ''}</p>
+      <div class="scene"><div class="flip ${flipped ? 'f' : ''}" id="flip" role="button" tabindex="0" aria-label="Flashcard. Press to flip.">
+        <div class="face front"><div class="top"><span class="tag ${w.level}">${w.level}</span><span class="tr"><span class="sbadge" style="color:${sl[1]}">${sl[0]}</span>${heart(w)}</span></div>
+          <div><div class="word">${esc(w.word)}</div><div class="pos" style="margin-top:8px">${esc(w.pos)}</div></div>
+          <div class="hint">Tap the card to see the meaning</div></div>
+        <div class="face back"><div class="top"><span class="pos">${esc(w.word)} · ${esc(w.pos)}</span><span class="tr"><span class="tag ${w.level}">${w.level}</span>${heart(w)}</span></div>
+          <div class="back-in"><div class="def"><h3>Definition</h3><p>${esc(w.def)}</p></div><div class="ex" style="margin-top:18px"><h3>Example</h3><p>${esc(w.ex)}</p></div></div></div>
+      </div></div>
+      <div class="ctl"><button class="btn ghost" id="prev" ${idx === 0 ? 'disabled style="opacity:.4"' : ''}>Previous</button><button class="btn ${sh ? 'pri' : 'sec'}" id="shuf" aria-pressed="${sh}">Shuffle: ${sh ? 'On' : 'Off'}</button><button class="btn ghost" id="next" ${canNext ? '' : 'disabled style="opacity:.4"'}>${last && sh ? 'New round' : 'Next'}</button></div>
+      <div class="ans"><button class="btn warn" id="mLearn">Need review</button><button class="btn ok" id="mKnown">Known</button></div>
+      <p class="hint" style="text-align:center;margin-top:16px">Shortcuts: Space flips, arrow keys move between cards.</p></div>`;
+  },
+
+  levels() {
+    return `<h1>Vocabulary levels</h1><p class="sub">Pick a level and study only the words that fit where you are.</p>
+    <div class="lvgrid">${LEVELS.map(l => { const s = stats(byLevel(l)); return `<div class="card lvc" style="--c:${LCOL[l]}"><span class="tag ${l}" style="align-self:flex-start">${l}</span><div><b>${s.total}</b> <span class="sub">${s.total === 1 ? 'word' : 'words'}</span></div>
+      <div><div class="t" style="display:flex;justify-content:space-between;font-size:.9rem;margin-bottom:6px"><span>Progress</span><b style="font-size:.9rem;font-family:var(--sans)">${s.pct}%</b></div><div class="track"><i style="width:${s.pct}%;background:${LCOL[l]}"></i></div><p class="sub" style="font-size:.88rem">${s.known} known, ${s.learning} need review</p></div>
+      <button class="btn pri" data-study="${l}" ${s.total ? '' : 'disabled style="opacity:.5"'}>Study ${l.toLowerCase()}</button></div>`; }).join('')}</div>`;
+  },
+
+  words() {
+    return `<h1>Your words</h1><p class="sub">Add, edit, and organize your personal vocabulary collection.</p>
+    <div class="mg"><form class="card" id="form" novalidate>
+      <h2 id="fT">Add a new word</h2><input type="hidden" id="fId">
+      <label for="fW">Word</label><input id="fW" maxlength="40" autocomplete="off"><div class="err" data-e="fW"></div>
+      <div class="row2"><div><label for="fP">Part of speech</label><select id="fP">${POS.map(p => `<option value="${p}">${cap(p)}</option>`).join('')}</select></div>
+      <div><label for="fL">Level</label><select id="fL">${LEVELS.map(l => `<option>${l}</option>`).join('')}</select></div></div>
+      <label for="fD">Definition</label><textarea id="fD" maxlength="300"></textarea><div class="err" data-e="fD"></div>
+      <label for="fE">Example sentence</label><textarea id="fE" maxlength="300"></textarea><div class="err" data-e="fE"></div>
+      <div class="fa"><button class="btn pri" type="submit" id="fS">Add word</button><button class="btn ghost hide" type="button" id="fC">Cancel edit</button></div></form>
+    <div class="card"><div class="tools"><input id="q" type="search" placeholder="Search words" aria-label="Search words"><select id="qL" aria-label="Filter by level"><option value="all">All levels</option><option value="fav">Favorites</option>${LEVELS.map(l => `<option>${l}</option>`).join('')}</select></div>
+      <div class="list" id="list"></div></div></div>`;
+  },
+
+  settings() {
+    return `<h1>Settings</h1><p class="sub">Your data lives in this browser. Nothing is sent anywhere.</p>
+    <div class="card" style="margin-top:22px">
+      <div class="set"><div><h2>Export vocabulary</h2><p>Download all words and their status as a JSON file you can keep as a backup.</p></div><button class="btn sec" id="exp">Export JSON</button></div>
+      <div class="set"><div><h2>Import vocabulary</h2><p>Add words from a JSON file. Duplicates are skipped and invalid entries are ignored.</p></div><button class="btn sec" id="imp">Choose file</button><input type="file" id="file" accept=".json,application/json" class="hide"></div>
+      <div class="set"><div><h2>Reset learning progress</h2><p>Mark every word as new and clear your activity. Your words stay.</p></div><button class="btn ghost" id="rst">Reset progress</button></div>
+      <div class="set"><div><h2>Restore sample words</h2><p>Replace your whole collection with the original ${SEED.length} sample words.</p></div><button class="btn dng" id="rest">Restore samples</button></div>
+    </div>`;
+  }
+};
+
+function wordList() {
+  const q = ($('#q').value || '').trim().toLowerCase(), lv = $('#qL').value;
+  const items = S.words.filter(w => (lv === 'all' || (lv === 'fav' ? w.fav : w.level === lv)) && (!q || w.word.toLowerCase().includes(q) || w.def.toLowerCase().includes(q)))
+    .sort((a, b) => a.word.localeCompare(b.word));
+  $('#list').innerHTML = items.length ? items.map(w => `<div class="item"><div style="min-width:0"><h4><span class="dot ${w.status}" title="${w.status === 'known' ? 'Known' : w.status === 'learning' ? 'Need review' : 'New'}"></span>${esc(w.word)} <span class="pos" style="font-size:.9rem;font-weight:400">${esc(w.pos)}</span><span class="tag ${w.level}">${w.level}</span></h4><p>${esc(w.def)}</p></div>
+    <div class="a">${heart(w)}<button class="btn ghost sm" data-edit="${w.id}">Edit</button><button class="btn ghost sm" style="color:var(--danger)" data-del="${w.id}">Delete</button></div></div>`).join('')
+    : `<div class="empty"><h2>${S.words.length ? 'No matches' : 'No words yet'}</h2><p>${S.words.length ? 'Try a different search or level.' : 'Use the form to add your first word.'}</p></div>`;
+}
+
+/* ---------- Render / events ---------- */
+const app = $('#app');
+function view() { const h = location.hash.slice(1); return V[h] ? h : 'dashboard'; }
+function render() {
+  const v = view();
+  document.querySelectorAll('#nav a').forEach(a => a.classList.toggle('on', a.dataset.v === v));
+  if (v === 'study' && !deck.length) buildDeck();
+  app.innerHTML = V[v]();
+  if (v === 'words') { wordList(); bindWords(); }
+}
+window.addEventListener('hashchange', () => { if (view() === 'study') buildDeck(true); window.scrollTo(0, 0); render(); });
+
+app.addEventListener('click', e => {
+  const t = e.target.closest('button,#flip'); if (!t) return;
+  if (t.id === 'flip') { flipped = !flipped; t.classList.toggle('f', flipped); return; }
+  if (t.dataset.fav) toggleFav(t.dataset.fav);
+  else if (t.dataset.goal) { S.goal = +t.dataset.goal; save(); render(); toast('Daily goal set to ' + S.goal + ' cards'); }
+  else if (t.dataset.lv) { S.prefs.level = t.dataset.lv; idx = 0; save(); buildDeck(); render(); }
+  else if (t.dataset.study) { S.prefs.level = t.dataset.study; idx = 0; save(); buildDeck(); location.hash = '#study'; if (view() === 'study') render(); }
+  else if (t.id === 'prev' && idx > 0) { idx--; flipped = false; render(); }
+  else if (t.id === 'next') { advance(); render(); }
+  else if (t.id === 'shuf') { S.prefs.shuffle = !S.prefs.shuffle; save(); idx = 0; buildDeck(); render(); toast(S.prefs.shuffle ? 'Shuffle on. Each card appears once per round.' : 'Normal order restored.'); }
+  else if (t.id === 'mKnown') mark('known');
+  else if (t.id === 'mLearn') mark('learning');
+  else if (t.id === 'exp') exportJSON();
+  else if (t.id === 'imp') $('#file').click();
+  else if (t.id === 'rst') resetProgress();
+  else if (t.id === 'rest') restore();
+});
+app.addEventListener('keydown', e => { if (e.target.id === 'flip' && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.target.click(); } });
+app.addEventListener('input', e => {
+  if (e.target.id !== 'sq') return;
+  sq = e.target.value; idx = 0; buildDeck(true); render();
+  const i = $('#sq'); i.focus(); i.setSelectionRange(sq.length, sq.length);
+});
+app.addEventListener('change', e => { if (e.target.id === 'file') importJSON(e.target.files[0], e.target); });
+document.addEventListener('keydown', e => {
+  if (view() !== 'study' || !deck.length || /INPUT|TEXTAREA|SELECT/.test(e.target.tagName) || $('#dlg').open) return;
+  if (e.key === 'ArrowRight' && (idx < deck.length - 1 || (S.prefs.shuffle && deck.length > 1))) { advance(); render(); }
+  else if (e.key === 'ArrowLeft' && idx > 0) { idx--; flipped = false; render(); }
+  else if (e.key === ' ' && e.target.tagName !== 'BUTTON') { e.preventDefault(); const f = $('#flip'); f.click(); }
+});
+
+function bindWords() {
+  const f = $('#form');
+  $('#q').oninput = $('#qL').onchange = wordList;
+  f.onsubmit = e => { e.preventDefault(); submitWord(); };
+  $('#fC').onclick = clearForm;
+  $('#list').onclick = async e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.edit) {
+      const w = S.words.find(x => x.id === b.dataset.edit);
+      $('#fId').value = w.id; $('#fW').value = w.word; $('#fP').value = w.pos; $('#fL').value = w.level; $('#fD').value = w.def; $('#fE').value = w.ex;
+      $('#fT').textContent = 'Edit word'; $('#fS').textContent = 'Save changes'; $('#fC').classList.remove('hide');
+      f.scrollIntoView({ behavior: 'smooth', block: 'start' }); $('#fW').focus();
+    } else if (b.dataset.del) {
+      const w = S.words.find(x => x.id === b.dataset.del);
+      if (await confirmDlg('Delete this word?', `"${w.word}" will be removed from your collection. This cannot be undone.`, 'Delete')) {
+        S.words = S.words.filter(x => x.id !== w.id); if ($('#fId').value === w.id) clearForm();
+        save(); buildDeck(true); wordList(); toast('Word deleted');
+      }
+    }
+  };
+}
+function clearForm() {
+  $('#form').reset(); $('#fId').value = ''; $('#fT').textContent = 'Add a new word'; $('#fS').textContent = 'Add word'; $('#fC').classList.add('hide');
+  document.querySelectorAll('.err').forEach(x => x.textContent = ''); document.querySelectorAll('.bad').forEach(x => x.classList.remove('bad'));
+}
+function submitWord() {
+  const v = id => $('#' + id).value.trim(), id = v('fId'), word = v('fW'), def = v('fD'), ex = v('fE');
+  const errs = {};
+  if (!word) errs.fW = 'Enter a word.';
+  else if (!/^[A-Za-z][A-Za-z' -]*$/.test(word)) errs.fW = 'Use English letters only (hyphens and apostrophes are allowed).';
+  else if (S.words.some(w => w.id !== id && w.word.toLowerCase() === word.toLowerCase())) errs.fW = 'This word is already in your collection.';
+  if (def.length < 5) errs.fD = 'Write a definition of at least 5 characters.';
+  if (ex.length < 5) errs.fE = 'Write an example sentence of at least 5 characters.';
+  else if (!new RegExp(word.slice(0, Math.max(3, word.length - 3)), 'i').test(ex) && word) errs.fE = errs.fE || '';
+  ['fW', 'fD', 'fE'].forEach(k => { $('#' + k).classList.toggle('bad', !!errs[k]); $(`[data-e=${k}]`).textContent = errs[k] || ''; });
+  if (Object.keys(errs).some(k => errs[k])) { const first = ['fW', 'fD', 'fE'].find(k => errs[k]); $('#' + first).focus(); return; }
+  const data = { word, pos: $('#fP').value, level: $('#fL').value, def, ex };
+  if (id) { Object.assign(S.words.find(w => w.id === id), data); toast('Changes saved'); }
+  else { S.words.push({ id: uid(), ...data, status: 'new' }); toast('Word added'); }
+  save(); buildDeck(true); clearForm(); wordList();
+}
+
+/* ---------- Data management ---------- */
+function exportJSON() {
+  const blob = new Blob([JSON.stringify({ app: 'Mnemo', version: 1, words: S.words }, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'mnemo-vocabulary-' + today() + '.json';
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  toast('Exported ' + S.words.length + ' words');
+}
+function importJSON(file, input) {
+  if (!file) return;
+  const rd = new FileReader();
+  rd.onerror = () => toast('The file could not be read.');
+  rd.onload = () => {
+    let data; try { data = JSON.parse(rd.result); } catch (e) { input.value = ''; return toast('Import failed: this is not valid JSON.'); }
+    const arr = Array.isArray(data) ? data : data && Array.isArray(data.words) ? data.words : null;
+    if (!arr) { input.value = ''; return toast('Import failed: expected a list of words.'); }
+    let added = 0, dup = 0, bad = 0; const seen = new Set(S.words.map(w => w.word.toLowerCase()));
+    arr.forEach(r => {
+      const ok = r && typeof r === 'object' && ['word', 'def', 'ex'].every(k => typeof r[k] === 'string' && r[k].trim()) && POS.includes(String(r.pos).toLowerCase()) && LEVELS.includes(r.level);
+      if (!ok) return bad++;
+      const key = r.word.trim().toLowerCase(); if (seen.has(key)) return dup++;
+      seen.add(key);
+      S.words.push({ id: uid(), word: r.word.trim().slice(0, 40), pos: r.pos.toLowerCase(), level: r.level, def: r.def.trim().slice(0, 300), ex: r.ex.trim().slice(0, 300), status: ['known', 'learning'].includes(r.status) ? r.status : 'new', fav: r.fav === true });
+      added++;
+    });
+    input.value = '';
+    if (!added && !dup) return toast(`Import failed: no valid words found (${bad} invalid).`);
+    save(); buildDeck(true);
+    toast(`Imported ${added} new ${added === 1 ? 'word' : 'words'}` + (dup ? `, ${dup} duplicate${dup > 1 ? 's' : ''} skipped` : '') + (bad ? `, ${bad} invalid ignored` : ''));
+  };
+  rd.readAsText(file);
+}
+async function resetProgress() {
+  if (!await confirmDlg('Reset all progress?', 'Every word will be marked as new and your weekly activity will be cleared. Your words are kept.', 'Reset progress')) return;
+  S.words.forEach(w => w.status = 'new'); S.activity = {}; idx = 0; save(); buildDeck(); toast('Progress reset');
+}
+async function restore() {
+  if (!await confirmDlg('Restore sample words?', 'This replaces your entire collection, including words you added, with the original samples.', 'Replace everything')) return;
+  S = { words: seedWords(), prefs: Object.assign({}, S.prefs, { level: 'all' }), activity: {}, goal: S.goal }; idx = 0; save(); buildDeck(); toast('Sample words restored');
+}
+
+setTheme(S.prefs.theme === 'dark' ? 'dark' : 'light');
+$('#theme').addEventListener('click', () => {
+  const root = document.documentElement; root.classList.add('theme-anim');
+  setTheme(S.prefs.theme === 'dark' ? 'light' : 'dark'); save();
+  setTimeout(() => root.classList.remove('theme-anim'), 450);
+});
+// Start a fresh daily count when the date changes while the app stays open.
+let curDay = today();
+const checkDay = () => { if (today() !== curDay) { curDay = today(); if (['dashboard', 'study'].includes(view())) render(); } };
+setInterval(checkDay, 30000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) checkDay(); });
+window.addEventListener('offline', () => toast('You are offline. Your words and progress stay on this device.'));
+window.addEventListener('online', () => toast('Back online'));
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('service-worker.js').catch(() => {}));
+}
+buildDeck(); render();
+})();
+</script>
+</body>
+</html>
