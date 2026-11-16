@@ -162,3 +162,11 @@ From the initial concept and interface design to the application logic and imple
   <br><br>
   <sub>Made for curious minds and lifelong learners.</sub>
 </p>
+
+---
+
+## 🔊 Pronunciation
+
+- **Words:** human recordings from [Wikimedia Commons](https://commons.wikimedia.org/) (via Wiktionary, with [dictionaryapi.dev](https://dictionaryapi.dev/) as a backup), licensed under Creative Commons (mostly CC BY-SA). The IPA shown is the one that matches the recording's accent (US or UK). When no recording exists, Mnemo says so and offers a clearly labeled computer voice.
+- **Example sentences:** no human recordings exist for them, so they use your device's built-in computer voice. Installing a "Natural", "Enhanced", or "Premium" English voice in your device settings makes it sound noticeably better.
+- Audio needs an internet connection. IPA text is cached after its first lookup.

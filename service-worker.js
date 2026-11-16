@@ -1,5 +1,5 @@
 // Bump CACHE_VERSION whenever you change any cached file so installed apps pick up the update.
-const CACHE_VERSION = 'mnemo-v2';
+const CACHE_VERSION = 'mnemo-v4';
 // Relative paths resolve against this file, so the app works at a domain root or in a GitHub Pages subfolder.
 const ASSETS = [
   './', './index.html', './manifest.json',
@@ -27,7 +27,7 @@ self.addEventListener('fetch', e => {
   if (req.mode === 'navigate') {
     e.respondWith(
       fetch(req)
-        .then(res => { const copy = res.clone(); caches.open(CACHE_VERSION).then(c => c.put('./index.html', copy)); return res; })
+        .then(res => { if (res.ok) { const copy = res.clone(); caches.open(CACHE_VERSION).then(c => c.put('./index.html', copy)); } return res; })
         .catch(() => caches.match('./index.html'))
     );
     return;
